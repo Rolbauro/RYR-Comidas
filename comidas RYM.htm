@@ -1,0 +1,1656 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 15 (filtered)">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Aptos;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:8.0pt;
+	margin-left:0cm;
+	line-height:115%;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif;}
+.MsoPapDefault
+	{margin-bottom:8.0pt;
+	line-height:115%;}
+@page WordSection1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 3.0cm 70.85pt 3.0cm;}
+div.WordSection1
+	{page:WordSection1;}
+ /* List Definitions */
+ ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+
+</head>
+
+<body lang=ES-AR style='word-wrap:break-word'>
+
+<div class=WordSection1>
+
+<p class=MsoNormal>&lt;!DOCTYPE html&gt;</p>
+
+<p class=MsoNormal>&lt;html lang=&quot;es&quot;&gt;</p>
+
+<p class=MsoNormal>&lt;head&gt;</p>
+
+<p class=MsoNormal>    &lt;meta charset=&quot;UTF-8&quot;&gt;</p>
+
+<p class=MsoNormal>    &lt;meta name=&quot;viewport&quot;
+content=&quot;width=device-width, initial-scale=1.0&quot;&gt;</p>
+
+<p class=MsoNormal>    &lt;title&gt;RYM Comidas&lt;/title&gt;</p>
+
+<p class=MsoNormal>    &lt;link
+href=&quot;https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap&quot;
+rel=&quot;stylesheet&quot;&gt;</p>
+
+<p class=MsoNormal>    &lt;script
+src=&quot;https://cdn.tailwindcss.com&quot;&gt;&lt;/script&gt;</p>
+
+<p class=MsoNormal>    &lt;link rel=&quot;stylesheet&quot;
+href=&quot;https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css&quot;
+xintegrity=&quot;sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==&quot;
+crossorigin=&quot;anonymous&quot; referrerpolicy=&quot;no-referrer&quot; /&gt;</p>
+
+<p class=MsoNormal>    &lt;style&gt;</p>
+
+<p class=MsoNormal>        body {</p>
+
+<p class=MsoNormal>            font-family: 'Inter', sans-serif;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        #carrito-items li {</p>
+
+<p class=MsoNormal>            display: flex;</p>
+
+<p class=MsoNormal>            justify-content: space-between;</p>
+
+<p class=MsoNormal>            align-items: center;</p>
+
+<p class=MsoNormal>            padding: 0.5rem 0;</p>
+
+<p class=MsoNormal>            border-bottom: 1px solid #e5e7eb;</p>
+
+<p class=MsoNormal>            margin-bottom: 0.5rem;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        #carrito-items li:last-child {</p>
+
+<p class=MsoNormal>            border-bottom: none;</p>
+
+<p class=MsoNormal>            margin-bottom: 0;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        #carrito-total {</p>
+
+<p class=MsoNormal>            font-weight: bold;</p>
+
+<p class=MsoNormal>            font-size: 1.25rem;</p>
+
+<p class=MsoNormal>            margin-top: 1rem;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        .oculto {</p>
+
+<p class=MsoNormal>            display: none;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        .visible {</p>
+
+<p class=MsoNormal>            display: block;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        .eliminar-item {</p>
+
+<p class=MsoNormal>            color: red;</p>
+
+<p class=MsoNormal>            cursor: pointer;</p>
+
+<p class=MsoNormal>            padding: 0.25rem;</p>
+
+<p class=MsoNormal>            border-radius: 0.375rem; /* rounded-md */</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        .eliminar-item:hover {</p>
+
+<p class=MsoNormal>            background-color: #fecaca; /* bg-red-100 */</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        /* Estilos para la notificación de éxito */</p>
+
+<p class=MsoNormal>        .notification {</p>
+
+<p class=MsoNormal>            position: fixed;</p>
+
+<p class=MsoNormal>            top: 1rem;</p>
+
+<p class=MsoNormal>            right: 1rem;</p>
+
+<p class=MsoNormal>            background-color: #4CAF50; /* Green */</p>
+
+<p class=MsoNormal>            color: white;</p>
+
+<p class=MsoNormal>            padding: 1rem 1.5rem;</p>
+
+<p class=MsoNormal>            border-radius: 0.5rem;</p>
+
+<p class=MsoNormal>            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);</p>
+
+<p class=MsoNormal>            z-index: 1000;</p>
+
+<p class=MsoNormal>            opacity: 0;</p>
+
+<p class=MsoNormal>            transition: opacity 0.5s ease-in-out;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>        .notification.show {</p>
+
+<p class=MsoNormal>            opacity: 1;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        /* Estilos para los botones de cantidad */</p>
+
+<p class=MsoNormal>        .cantidad-btn {</p>
+
+<p class=MsoNormal>            background-color: #e5e7eb; /* gray-200 */</p>
+
+<p class=MsoNormal>            color: #4b5563; /* gray-700 */</p>
+
+<p class=MsoNormal>            border-radius: 9999px; /* full rounded */</p>
+
+<p class=MsoNormal>            width: 1.5rem;</p>
+
+<p class=MsoNormal>            height: 1.5rem;</p>
+
+<p class=MsoNormal>            display: inline-flex;</p>
+
+<p class=MsoNormal>            align-items: center;</p>
+
+<p class=MsoNormal>            justify-content: center;</p>
+
+<p class=MsoNormal>            font-weight: bold;</p>
+
+<p class=MsoNormal>            cursor: pointer;</p>
+
+<p class=MsoNormal>            margin: 0 0.25rem;</p>
+
+<p class=MsoNormal>            transition: background-color 0.2s;</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        .cantidad-btn:hover {</p>
+
+<p class=MsoNormal>            background-color: #d1d5db; /* gray-300 */</p>
+
+<p class=MsoNormal>        }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>    &lt;/style&gt;</p>
+
+<p class=MsoNormal>    &lt;script type=&quot;module&quot;&gt;</p>
+
+<p class=MsoNormal>        // Importar módulos de Firebase</p>
+
+<p class=MsoNormal>        import { initializeApp } from
+&quot;https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js&quot;;</p>
+
+<p class=MsoNormal>        import { getAuth, signInAnonymously,
+signInWithCustomToken, onAuthStateChanged } from
+&quot;https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js&quot;;</p>
+
+<p class=MsoNormal>        import { getFirestore, collection, addDoc,
+onSnapshot, query, orderBy } from
+&quot;https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js&quot;;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>        document.addEventListener('DOMContentLoaded', async
+() =&gt; {</p>
+
+<p class=MsoNormal>            // Variables globales de Firebase
+(proporcionadas por el entorno Canvas)</p>
+
+<p class=MsoNormal>            const appId = typeof __app_id !== 'undefined' ?
+__app_id : 'default-app-id';</p>
+
+<p class=MsoNormal>            const firebaseConfig = JSON.parse(typeof
+__firebase_config !== 'undefined' ? __firebase_config : '{}');</p>
+
+<p class=MsoNormal>            const initialAuthToken = typeof
+__initial_auth_token !== 'undefined' ? __initial_auth_token : null;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Inicializar Firebase</p>
+
+<p class=MsoNormal>            const app = initializeApp(firebaseConfig);</p>
+
+<p class=MsoNormal>            const db = getFirestore(app);</p>
+
+<p class=MsoNormal>            const auth = getAuth(app);</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            let userId = null;</p>
+
+<p class=MsoNormal>            let isAuthReady = false;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Elementos del DOM</p>
+
+<p class=MsoNormal>            const botonesAgregar =
+document.querySelectorAll('.agregar-carrito');</p>
+
+<p class=MsoNormal>            const carritoItemsLista =
+document.getElementById('carrito-items');</p>
+
+<p class=MsoNormal>            const carritoTotalElement =
+document.getElementById('carrito-total');</p>
+
+<p class=MsoNormal>            const botonFinalizarCompra =
+document.getElementById('finalizar-compra');</p>
+
+<p class=MsoNormal>            const carritoModal =
+document.getElementById('carrito-modal');</p>
+
+<p class=MsoNormal>            const modalOverlay =
+document.getElementById('modal-overlay'); // Overlay para el carrito</p>
+
+<p class=MsoNormal>            const botonCerrarModal =
+document.getElementById('cerrar-modal');</p>
+
+<p class=MsoNormal>            const verCarritoButton =
+document.getElementById('ver-carrito');</p>
+
+<p class=MsoNormal>            const carritoBadge =
+document.getElementById('carrito-badge');</p>
+
+<p class=MsoNormal>            const userIdDisplay =
+document.getElementById('user-id-display');</p>
+
+<p class=MsoNormal>            const notificationElement =
+document.getElementById('notification');</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Elementos del nuevo modal de cliente</p>
+
+<p class=MsoNormal>            const clienteModal =
+document.getElementById('cliente-modal');</p>
+
+<p class=MsoNormal>            const clienteModalOverlay =
+document.getElementById('cliente-modal-overlay'); // Overlay para el cliente</p>
+
+<p class=MsoNormal>            const botonConfirmarPedido =
+document.getElementById('confirmar-pedido');</p>
+
+<p class=MsoNormal>            const botonCancelarClienteModal =
+document.getElementById('cancelar-cliente-modal');</p>
+
+<p class=MsoNormal>            const inputNombreCliente =
+document.getElementById('nombre-cliente');</p>
+
+<p class=MsoNormal>            const inputDireccionCliente =
+document.getElementById('direccion-cliente');</p>
+
+<p class=MsoNormal>            const selectFormaPago =
+document.getElementById('forma-pago');</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            let carrito = [];</p>
+
+<p class=MsoNormal>            let total = 0;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Función para mostrar notificaciones</p>
+
+<p class=MsoNormal>            function showNotification(message) {</p>
+
+<p class=MsoNormal>                notificationElement.textContent = message;</p>
+
+<p class=MsoNormal>                notificationElement.classList.add('show');</p>
+
+<p class=MsoNormal>                setTimeout(() =&gt; {</p>
+
+<p class=MsoNormal>                   
+notificationElement.classList.remove('show');</p>
+
+<p class=MsoNormal>                }, 3000);</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Listener de cambios de autenticación</p>
+
+<p class=MsoNormal>            onAuthStateChanged(auth, async (user) =&gt; {</p>
+
+<p class=MsoNormal>                if (user) {</p>
+
+<p class=MsoNormal>                    userId = user.uid;</p>
+
+<p class=MsoNormal>                    userIdDisplay.textContent = `ID de
+Usuario: ${userId}`;</p>
+
+<p class=MsoNormal>                    isAuthReady = true;</p>
+
+<p class=MsoNormal>                    console.log(&quot;Usuario
+autenticado:&quot;, userId);</p>
+
+<p class=MsoNormal>                    cargarCarritoDesdeLocalStorage();</p>
+
+<p class=MsoNormal>                } else {</p>
+
+<p class=MsoNormal>                    if (!initialAuthToken) {</p>
+
+<p class=MsoNormal>                        try {</p>
+
+<p class=MsoNormal>                            await signInAnonymously(auth);</p>
+
+<p class=MsoNormal>                            console.log(&quot;Sesión anónima
+iniciada.&quot;);</p>
+
+<p class=MsoNormal>                        } catch (error) {</p>
+
+<p class=MsoNormal>                            console.error(&quot;Error al
+iniciar sesión anónimamente:&quot;, error);</p>
+
+<p class=MsoNormal>                        }</p>
+
+<p class=MsoNormal>                    } else {</p>
+
+<p class=MsoNormal>                        try {</p>
+
+<p class=MsoNormal>                            await
+signInWithCustomToken(auth, initialAuthToken);</p>
+
+<p class=MsoNormal>                            console.log(&quot;Sesión
+iniciada con token personalizado.&quot;);</p>
+
+<p class=MsoNormal>                        } catch (error) {</p>
+
+<p class=MsoNormal>                            console.error(&quot;Error al
+iniciar sesión con token personalizado:&quot;, error);</p>
+
+<p class=MsoNormal>                        }</p>
+
+<p class=MsoNormal>                    }</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>            });</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Cargar carrito desde localStorage</p>
+
+<p class=MsoNormal>            function cargarCarritoDesdeLocalStorage() {</p>
+
+<p class=MsoNormal>                const carritoGuardado =
+localStorage.getItem('rymComidasCarrito');</p>
+
+<p class=MsoNormal>                if (carritoGuardado) {</p>
+
+<p class=MsoNormal>                    carrito = JSON.parse(carritoGuardado);</p>
+
+<p class=MsoNormal>                    total = carrito.reduce((sum, item) =&gt;
+sum + item.precioTotal, 0);</p>
+
+<p class=MsoNormal>                    actualizarCarrito();</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Guardar carrito en localStorage</p>
+
+<p class=MsoNormal>            function guardarCarritoEnLocalStorage() {</p>
+
+<p class=MsoNormal>                localStorage.setItem('rymComidasCarrito',
+JSON.stringify(carrito));</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Asignar event listeners a los botones
+&quot;Agregar al carrito&quot;</p>
+
+<p class=MsoNormal>            botonesAgregar.forEach(boton =&gt; {</p>
+
+<p class=MsoNormal>                boton.addEventListener('click',
+agregarAlCarrito);</p>
+
+<p class=MsoNormal>            });</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Asignar event listeners a los botones de los
+modales</p>
+
+<p class=MsoNormal>            botonFinalizarCompra.addEventListener('click',
+mostrarFormularioCliente); // Cambiado para mostrar el formulario</p>
+
+<p class=MsoNormal>            botonCerrarModal.addEventListener('click',
+cerrarCarrito);</p>
+
+<p class=MsoNormal>            modalOverlay.addEventListener('click',
+cerrarCarrito);</p>
+
+<p class=MsoNormal>            verCarritoButton.addEventListener('click',
+mostrarCarrito);</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            // Event listeners para el modal de cliente</p>
+
+<p class=MsoNormal>            botonConfirmarPedido.addEventListener('click',
+confirmarPedido);</p>
+
+<p class=MsoNormal>           
+botonCancelarClienteModal.addEventListener('click', cerrarFormularioCliente);</p>
+
+<p class=MsoNormal>            clienteModalOverlay.addEventListener('click',
+cerrarFormularioCliente);</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            function agregarAlCarrito(evento) {</p>
+
+<p class=MsoNormal>                const boton = evento.target;</p>
+
+<p class=MsoNormal>                const articulo = boton.parentElement;</p>
+
+<p class=MsoNormal>                const nombre =
+articulo.querySelector('h2').textContent;</p>
+
+<p class=MsoNormal>                const precioTexto =
+articulo.querySelector('.text-red-600').textContent;</p>
+
+<p class=MsoNormal>                const precio =
+parseFloat(precioTexto.replace('$', ''));</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                const itemExistente = carrito.find(item
+=&gt; item.nombre === nombre);</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                if (itemExistente) {</p>
+
+<p class=MsoNormal>                    itemExistente.cantidad++;</p>
+
+<p class=MsoNormal>                    itemExistente.precioTotal =
+itemExistente.cantidad * precio;</p>
+
+<p class=MsoNormal>                } else {</p>
+
+<p class=MsoNormal>                    carrito.push({ nombre, precio, cantidad:
+1, precioTotal: precio });</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                total += precio;</p>
+
+<p class=MsoNormal>                actualizarCarrito();</p>
+
+<p class=MsoNormal>                showNotification(`&quot;${nombre}&quot;
+añadido al carrito.`);</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            function actualizarCarrito() {</p>
+
+<p class=MsoNormal>                carritoItemsLista.innerHTML = '';</p>
+
+<p class=MsoNormal>                carrito.forEach(item =&gt; {</p>
+
+<p class=MsoNormal>                    const listItem =
+document.createElement('li');</p>
+
+<p class=MsoNormal>                    listItem.innerHTML = `</p>
+
+<p class=MsoNormal>                        &lt;span&gt;${item.nombre} </p>
+
+<p class=MsoNormal>                            &lt;button
+class=&quot;cantidad-btn disminuir-cantidad&quot;
+data-nombre=&quot;${item.nombre}&quot;&gt;-&lt;/button&gt; </p>
+
+<p class=MsoNormal>                            x${item.cantidad} </p>
+
+<p class=MsoNormal>                            &lt;button
+class=&quot;cantidad-btn aumentar-cantidad&quot;
+data-nombre=&quot;${item.nombre}&quot;&gt;+&lt;/button&gt; </p>
+
+<p class=MsoNormal>                            -
+$${item.precioTotal.toFixed(2)}</p>
+
+<p class=MsoNormal>                        &lt;/span&gt;</p>
+
+<p class=MsoNormal>                        &lt;span
+class=&quot;eliminar-item&quot;
+data-nombre=&quot;${item.nombre}&quot;&gt;Eliminar&lt;/span&gt;</p>
+
+<p class=MsoNormal>                    `;</p>
+
+<p class=MsoNormal>                    carritoItemsLista.appendChild(listItem);</p>
+
+<p class=MsoNormal>                });</p>
+
+<p class=MsoNormal>                carritoTotalElement.textContent = `Total:
+$${total.toFixed(2)}`;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                // Añadir event listeners a los botones de
+cantidad y eliminar</p>
+
+<p class=MsoNormal>               
+document.querySelectorAll('.eliminar-item').forEach(botonEliminar =&gt; {</p>
+
+<p class=MsoNormal>                    botonEliminar.addEventListener('click',
+eliminarItem);</p>
+
+<p class=MsoNormal>                });</p>
+
+<p class=MsoNormal>               
+document.querySelectorAll('.aumentar-cantidad').forEach(botonAumentar =&gt; {</p>
+
+<p class=MsoNormal>                    botonAumentar.addEventListener('click',
+aumentarCantidad);</p>
+
+<p class=MsoNormal>                });</p>
+
+<p class=MsoNormal>               
+document.querySelectorAll('.disminuir-cantidad').forEach(botonDisminuir =&gt; {</p>
+
+<p class=MsoNormal>                    botonDisminuir.addEventListener('click',
+disminuirCantidad);</p>
+
+<p class=MsoNormal>                });</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                let totalItems = carrito.reduce((sum, item)
+=&gt; sum + item.cantidad, 0);</p>
+
+<p class=MsoNormal>                carritoBadge.textContent = totalItems;</p>
+
+<p class=MsoNormal>                carritoBadge.style.display = totalItems &gt;
+0 ? 'block' : 'none';</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                guardarCarritoEnLocalStorage();</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            function aumentarCantidad(evento) {</p>
+
+<p class=MsoNormal>                const nombreItem =
+evento.target.dataset.nombre;</p>
+
+<p class=MsoNormal>                const item = carrito.find(i =&gt; i.nombre
+=== nombreItem);</p>
+
+<p class=MsoNormal>                if (item) {</p>
+
+<p class=MsoNormal>                    item.cantidad++;</p>
+
+<p class=MsoNormal>                    item.precioTotal = item.cantidad *
+item.precio;</p>
+
+<p class=MsoNormal>                    total += item.precio;</p>
+
+<p class=MsoNormal>                    actualizarCarrito();</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            function disminuirCantidad(evento) {</p>
+
+<p class=MsoNormal>                const nombreItem =
+evento.target.dataset.nombre;</p>
+
+<p class=MsoNormal>                const item = carrito.find(i =&gt; i.nombre
+=== nombreItem);</p>
+
+<p class=MsoNormal>                if (item &amp;&amp; item.cantidad &gt; 1) {</p>
+
+<p class=MsoNormal>                    item.cantidad--;</p>
+
+<p class=MsoNormal>                    item.precioTotal = item.cantidad *
+item.precio;</p>
+
+<p class=MsoNormal>                    total -= item.precio;</p>
+
+<p class=MsoNormal>                    actualizarCarrito();</p>
+
+<p class=MsoNormal>                } else if (item &amp;&amp; item.cantidad ===
+1) {</p>
+
+<p class=MsoNormal>                    eliminarItem({ target: { dataset: {
+nombre: nombreItem } } }); // Llama a eliminarItem si la cantidad es 1</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            function eliminarItem(evento) {</p>
+
+<p class=MsoNormal>                const nombreItem =
+evento.target.dataset.nombre;</p>
+
+<p class=MsoNormal>                const itemIndex = carrito.findIndex(item
+=&gt; item.nombre === nombreItem);</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                if (itemIndex &gt; -1) {</p>
+
+<p class=MsoNormal>                    const itemAEliminar =
+carrito[itemIndex];</p>
+
+<p class=MsoNormal>                    total -= itemAEliminar.precioTotal; //
+Restar el precio total de ese item</p>
+
+<p class=MsoNormal>                    carrito.splice(itemIndex, 1); //
+Eliminar el item del array</p>
+
+<p class=MsoNormal>                    actualizarCarrito();</p>
+
+<p class=MsoNormal>                   
+showNotification(`&quot;${nombreItem}&quot; eliminado del carrito.`);</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                if (carrito.length === 0) {</p>
+
+<p class=MsoNormal>                    cerrarCarrito();</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            function mostrarCarrito() {</p>
+
+<p class=MsoNormal>                if (carrito.length === 0) {</p>
+
+<p class=MsoNormal>                    showNotification('El carrito está vacío.
+Agregue productos antes de finalizar la compra.');</p>
+
+<p class=MsoNormal>                    return;</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>                actualizarCarrito();</p>
+
+<p class=MsoNormal>                carritoModal.classList.remove('oculto');</p>
+
+<p class=MsoNormal>                carritoModal.classList.add('visible');</p>
+
+<p class=MsoNormal>                modalOverlay.classList.remove('oculto');</p>
+
+<p class=MsoNormal>                modalOverlay.classList.add('visible');</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            function cerrarCarrito() {</p>
+
+<p class=MsoNormal>                carritoModal.classList.add('oculto');</p>
+
+<p class=MsoNormal>                carritoModal.classList.remove('visible');</p>
+
+<p class=MsoNormal>                modalOverlay.classList.add('oculto');</p>
+
+<p class=MsoNormal>                modalOverlay.classList.remove('visible');</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            function mostrarFormularioCliente() {</p>
+
+<p class=MsoNormal>                if (carrito.length === 0) {</p>
+
+<p class=MsoNormal>                    showNotification('El carrito está vacío.
+Agregue productos antes de finalizar la compra.');</p>
+
+<p class=MsoNormal>                    return;</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>                // Cierra el modal del carrito si está
+abierto</p>
+
+<p class=MsoNormal>                cerrarCarrito();</p>
+
+<p class=MsoNormal>                clienteModal.classList.remove('oculto');</p>
+
+<p class=MsoNormal>                clienteModal.classList.add('visible');</p>
+
+<p class=MsoNormal>               
+clienteModalOverlay.classList.remove('oculto');</p>
+
+<p class=MsoNormal>               
+clienteModalOverlay.classList.add('visible');</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            function cerrarFormularioCliente() {</p>
+
+<p class=MsoNormal>                clienteModal.classList.add('oculto');</p>
+
+<p class=MsoNormal>                clienteModal.classList.remove('visible');</p>
+
+<p class=MsoNormal>                clienteModalOverlay.classList.add('oculto');</p>
+
+<p class=MsoNormal>               
+clienteModalOverlay.classList.remove('visible');</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            async function confirmarPedido() {</p>
+
+<p class=MsoNormal>                const nombreCliente =
+inputNombreCliente.value.trim();</p>
+
+<p class=MsoNormal>                const direccionCliente =
+inputDireccionCliente.value.trim();</p>
+
+<p class=MsoNormal>                const formaPago = selectFormaPago.value;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                if (!nombreCliente || !direccionCliente ||
+!formaPago) {</p>
+
+<p class=MsoNormal>                    showNotification('Por favor, complete
+todos los campos del formulario.');</p>
+
+<p class=MsoNormal>                    return;</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                if (!isAuthReady || !userId) {</p>
+
+<p class=MsoNormal>                    showNotification('Error: Autenticación
+no lista. Intente de nuevo.');</p>
+
+<p class=MsoNormal>                    console.error(&quot;Autenticación no
+lista o userId no disponible.&quot;);</p>
+
+<p class=MsoNormal>                    return;</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                let mensajeWhatsApp = `¡Nuevo Pedido de RYM
+Comidas!\n\n`;</p>
+
+<p class=MsoNormal>                mensajeWhatsApp += `Cliente:
+${nombreCliente}\n`;</p>
+
+<p class=MsoNormal>                mensajeWhatsApp += `Dirección:
+${direccionCliente}\n`;</p>
+
+<p class=MsoNormal>                mensajeWhatsApp += `Forma de Pago:
+${formaPago}\n\n`;</p>
+
+<p class=MsoNormal>                mensajeWhatsApp += `Detalle del Pedido:\n`;</p>
+
+<p class=MsoNormal>                carrito.forEach(item =&gt; {</p>
+
+<p class=MsoNormal>                    mensajeWhatsApp += `${item.nombre}
+x${item.cantidad} - $${item.precioTotal.toFixed(2)}\n`;</p>
+
+<p class=MsoNormal>                });</p>
+
+<p class=MsoNormal>                mensajeWhatsApp += `Total:
+$${total.toFixed(2)}`;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                // Guardar pedido en Firestore</p>
+
+<p class=MsoNormal>                try {</p>
+
+<p class=MsoNormal>                    const ordersCollectionRef =
+collection(db, `artifacts/${appId}/users/${userId}/orders`);</p>
+
+<p class=MsoNormal>                    await addDoc(ordersCollectionRef, {</p>
+
+<p class=MsoNormal>                        cliente: nombreCliente,</p>
+
+<p class=MsoNormal>                        direccion: direccionCliente,</p>
+
+<p class=MsoNormal>                        formaPago: formaPago,</p>
+
+<p class=MsoNormal>                        items: carrito,</p>
+
+<p class=MsoNormal>                        total: total,</p>
+
+<p class=MsoNormal>                        timestamp: new Date(),</p>
+
+<p class=MsoNormal>                        userId: userId</p>
+
+<p class=MsoNormal>                    });</p>
+
+<p class=MsoNormal>                    console.log(&quot;Pedido guardado en
+Firestore.&quot;);</p>
+
+<p class=MsoNormal>                    showNotification(&quot;Pedido enviado y
+guardado con éxito!&quot;);</p>
+
+<p class=MsoNormal>                } catch (e) {</p>
+
+<p class=MsoNormal>                    console.error(&quot;Error al guardar el
+pedido en Firestore: &quot;, e);</p>
+
+<p class=MsoNormal>                    showNotification(&quot;Error al guardar
+el pedido. Intente de nuevo.&quot;);</p>
+
+<p class=MsoNormal>                }</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                // Enviar por WhatsApp</p>
+
+<p class=MsoNormal>                const telefono = &quot;5493704561974&quot;;</p>
+
+<p class=MsoNormal>                const url =
+`https://api.whatsapp.com/send/?phone=${telefono}&amp;text=${encodeURIComponent(mensajeWhatsApp)}&amp;type=phone_number&amp;app_absent=0`;</p>
+
+<p class=MsoNormal>                window.open(url, '_blank');</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>                // Vaciar carrito y localStorage</p>
+
+<p class=MsoNormal>                carrito = [];</p>
+
+<p class=MsoNormal>                total = 0;</p>
+
+<p class=MsoNormal>               
+localStorage.removeItem('rymComidasCarrito');</p>
+
+<p class=MsoNormal>                actualizarCarrito();</p>
+
+<p class=MsoNormal>                cerrarFormularioCliente(); // Cierra el
+formulario del cliente</p>
+
+<p class=MsoNormal>            }</p>
+
+<p class=MsoNormal>        });</p>
+
+<p class=MsoNormal>    &lt;/script&gt;</p>
+
+<p class=MsoNormal>&lt;/head&gt;</p>
+
+<p class=MsoNormal>&lt;body class=&quot;bg-gray-100&quot;&gt;</p>
+
+<p class=MsoNormal>    &lt;div id=&quot;notification&quot;
+class=&quot;notification&quot;&gt;&lt;/div&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>    &lt;header class=&quot;bg-red-600 text-white py-4
+text-center rounded-b-md shadow-md&quot;&gt;</p>
+
+<p class=MsoNormal>        &lt;h1 class=&quot;text-2xl
+font-semibold&quot;&gt;RYM Comidas&lt;/h1&gt;</p>
+
+<p class=MsoNormal>    &lt;/header&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>    &lt;main class=&quot;container mx-auto mt-6
+p-4&quot;&gt;</p>
+
+<p class=MsoNormal>        &lt;div class=&quot;text-right text-gray-600 text-sm
+mb-2&quot; id=&quot;user-id-display&quot;&gt;</p>
+
+<p class=MsoNormal>            &lt;/div&gt;</p>
+
+<p class=MsoNormal>        &lt;section class=&quot;grid grid-cols-1
+md:grid-cols-2 lg:grid-cols-3 gap-6&quot;&gt;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Hamburguesa Simple&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Lechuga, tomate, jamón y queso.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$3000&lt;/p&gt;</p>
+
+<p class=MsoNormal>                 &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Hamburguesa Completa&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                 </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Lechuga, tomate, huevo, jamón y queso.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$4000&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Empanadas de Carne&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Relleno de carne jugoso.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$6000&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Empanadas de Jamón y Queso&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Relleno de jamón y queso.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$6500&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Lomito Simple&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Lechuga, tomate, jamón y queso.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$7500&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Lomito Completo&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Lechuga, tomate, huevo, jamón y queso.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$8000&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Sándwich de Milanesa de Carne
+Simple&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Lechuga, tomate, jamón y queso.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$4500&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Sándwich de Milanesa de Carne
+Completo&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Lechuga, tomate, huevo, jamón y queso.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$5000&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Sándwich de Milanesa de Pollo
+Simple&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Lechuga, tomate, jamón y queso.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$4000&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Sándwich de Milanesa de Pollo
+Completo&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Lechuga, tomate, huevo, jamón y queso.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$4500&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Pizza Muzzarella&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Salsa de tomate, muzzarella y orégano.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$6000&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Pizza Pepperoni&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Salsa de tomate, salame de cerdo.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$8000&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Pizza Especial&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Salsa de tomate, muzzarella, tomate, jamón y
+huevo.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$7000&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Papas Fritas Porción&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Porción de papas fritas.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$3000&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Papas Fritas Gratinadas
+Porción&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                </p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Porción de papas fritas gratinadas.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$5000&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Coca Cola&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Gaseosa Coca Cola 1.5Lts.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$3500&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;article class=&quot;bg-white rounded-lg
+shadow-md p-4 flex flex-col justify-between&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;h2 class=&quot;text-xl font-semibold
+mb-2 text-center text-gray-800&quot;&gt;Fanta Naranja&lt;/h2&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-gray-700 text-sm mb-2
+text-center&quot;&gt;Gaseosa Fanta Naranja 1.5Lts.&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;p class=&quot;text-lg font-bold
+text-center text-red-600 mb-4&quot;&gt;$3000&lt;/p&gt;</p>
+
+<p class=MsoNormal>                &lt;button class=&quot;bg-green-500
+hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none
+focus:shadow-outline self-center w-3/4 agregar-carrito&quot;&gt;Agregar al
+carrito&lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;/article&gt;</p>
+
+<p class=MsoNormal>        &lt;/section&gt;</p>
+
+<p class=MsoNormal>        &lt;div class=&quot;text-center mt-4&quot;&gt;</p>
+
+<p class=MsoNormal>            &lt;button id=&quot;ver-carrito&quot;
+class=&quot;bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4
+rounded-md focus:outline-none focus:shadow-outline mr-4&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;i class=&quot;fas
+fa-shopping-cart&quot;&gt;&lt;/i&gt; Ver Carrito &lt;span
+id=&quot;carrito-badge&quot; class=&quot;ml-2 px-2 py-1 rounded-full bg-red-500
+text-white text-xs font-semibold&quot; style=&quot;display: none;&quot;&gt;0&lt;/span&gt;</p>
+
+<p class=MsoNormal>            &lt;/button&gt;</p>
+
+<p class=MsoNormal>            &lt;button id=&quot;finalizar-compra&quot;
+class=&quot;bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4
+rounded-md focus:outline-none focus:shadow-outline&quot;&gt;Finalizar
+Compra&lt;/button&gt;</p>
+
+<p class=MsoNormal>        &lt;/div&gt;</p>
+
+<p class=MsoNormal>    &lt;/main&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>    &lt;div id=&quot;carrito-modal&quot; class=&quot;oculto
+fixed z-10 inset-0 overflow-y-auto&quot;
+aria-labelledby=&quot;modal-title&quot; role=&quot;dialog&quot;
+aria-modal=&quot;true&quot;&gt;</p>
+
+<p class=MsoNormal>        &lt;div class=&quot;flex items-end justify-center
+min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0&quot;&gt;</p>
+
+<p class=MsoNormal>            &lt;div id=&quot;modal-overlay&quot;
+class=&quot;fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity&quot;
+aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;span class=&quot;hidden sm:inline-block
+sm:align-middle sm:h-screen&quot;
+aria-hidden=&quot;true&quot;&gt;&amp;#8203;&lt;/span&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>            &lt;div class=&quot;inline-block align-bottom
+bg-white rounded-lg text-left overflow-hidden shadow-xl transform
+transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;div class=&quot;bg-white px-4 pt-5 pb-4
+sm:p-6 sm:pb-4&quot;&gt;</p>
+
+<p class=MsoNormal>                    &lt;div class=&quot;sm:flex
+sm:items-start&quot;&gt;</p>
+
+<p class=MsoNormal>                        &lt;div class=&quot;mt-3 text-center
+sm:mt-0 sm:ml-4 sm:text-left w-full&quot;&gt;</p>
+
+<p class=MsoNormal>                            &lt;h3 class=&quot;text-lg
+leading-6 font-medium text-gray-900&quot; id=&quot;modal-title&quot;&gt;</p>
+
+<p class=MsoNormal>                                Tu Carrito de Compras</p>
+
+<p class=MsoNormal>                            &lt;/h3&gt;</p>
+
+<p class=MsoNormal>                            &lt;ul
+id=&quot;carrito-items&quot; class=&quot;mt-2 text-gray-700&quot;&gt;</p>
+
+<p class=MsoNormal>                                 &lt;/ul&gt;</p>
+
+<p class=MsoNormal>                            &lt;p
+id=&quot;carrito-total&quot; class=&quot;text-gray-900&quot;&gt;&lt;/p&gt;</p>
+
+<p class=MsoNormal>                        &lt;/div&gt;</p>
+
+<p class=MsoNormal>                    &lt;/div&gt;</p>
+
+<p class=MsoNormal>                &lt;/div&gt;</p>
+
+<p class=MsoNormal>                &lt;div class=&quot;bg-gray-50 px-4 py-3
+sm:px-6 sm:flex sm:flex-row-reverse&quot;&gt;</p>
+
+<p class=MsoNormal>                    &lt;button id=&quot;cerrar-modal&quot;
+type=&quot;button&quot; class=&quot;mt-3 w-full inline-flex justify-center
+rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-100 text-base
+font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2
+focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto
+sm:text-sm&quot;&gt;</p>
+
+<p class=MsoNormal>                        Cerrar</p>
+
+<p class=MsoNormal>                    &lt;/button&gt;</p>
+
+<p class=MsoNormal>                    </p>
+
+<p class=MsoNormal>                &lt;/div&gt;</p>
+
+<p class=MsoNormal>            &lt;/div&gt;</p>
+
+<p class=MsoNormal>        &lt;/div&gt;</p>
+
+<p class=MsoNormal>    &lt;/div&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>    &lt;div id=&quot;cliente-modal&quot; class=&quot;oculto
+fixed z-10 inset-0 overflow-y-auto&quot;
+aria-labelledby=&quot;modal-title-cliente&quot; role=&quot;dialog&quot;
+aria-modal=&quot;true&quot;&gt;</p>
+
+<p class=MsoNormal>        &lt;div class=&quot;flex items-end justify-center
+min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0&quot;&gt;</p>
+
+<p class=MsoNormal>            &lt;div id=&quot;cliente-modal-overlay&quot;
+class=&quot;fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity&quot;
+aria-hidden=&quot;true&quot;&gt;&lt;/div&gt;</p>
+
+<p class=MsoNormal>            &lt;span class=&quot;hidden sm:inline-block
+sm:align-middle sm:h-screen&quot;
+aria-hidden=&quot;true&quot;&gt;&amp;#8203;&lt;/span&gt;</p>
+
+<p class=MsoNormal>            &lt;div class=&quot;inline-block align-bottom
+bg-white rounded-lg text-left overflow-hidden shadow-xl transform
+transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full&quot;&gt;</p>
+
+<p class=MsoNormal>                &lt;div class=&quot;bg-white px-4 pt-5 pb-4
+sm:p-6 sm:pb-4&quot;&gt;</p>
+
+<p class=MsoNormal>                    &lt;div class=&quot;sm:flex
+sm:items-start&quot;&gt;</p>
+
+<p class=MsoNormal>                        &lt;div class=&quot;mt-3 text-center
+sm:mt-0 sm:ml-4 sm:text-left w-full&quot;&gt;</p>
+
+<p class=MsoNormal>                            &lt;h3 class=&quot;text-lg
+leading-6 font-medium text-gray-900&quot;
+id=&quot;modal-title-cliente&quot;&gt;</p>
+
+<p class=MsoNormal>                                Detalles del Cliente y Forma
+de Pago</p>
+
+<p class=MsoNormal>                            &lt;/h3&gt;</p>
+
+<p class=MsoNormal>                            &lt;form
+id=&quot;cliente-form&quot; class=&quot;mt-4 space-y-4&quot;&gt;</p>
+
+<p class=MsoNormal>                                &lt;div&gt;</p>
+
+<p class=MsoNormal>                                    &lt;label
+for=&quot;nombre-cliente&quot; class=&quot;block text-sm font-medium
+text-gray-700&quot;&gt;Nombre:&lt;/label&gt;</p>
+
+<p class=MsoNormal>                                    &lt;input
+type=&quot;text&quot; id=&quot;nombre-cliente&quot; class=&quot;mt-1 block
+w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring
+focus:ring-indigo-200 focus:ring-opacity-50 p-2&quot; required&gt;</p>
+
+<p class=MsoNormal>                                &lt;/div&gt;</p>
+
+<p class=MsoNormal>                                &lt;div&gt;</p>
+
+<p class=MsoNormal>                                    &lt;label
+for=&quot;direccion-cliente&quot; class=&quot;block text-sm font-medium
+text-gray-700&quot;&gt;Dirección de Entrega:&lt;/label&gt;</p>
+
+<p class=MsoNormal>                                    &lt;input
+type=&quot;text&quot; id=&quot;direccion-cliente&quot; class=&quot;mt-1 block
+w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring
+focus:ring-indigo-200 focus:ring-opacity-50 p-2&quot; required&gt;</p>
+
+<p class=MsoNormal>                                &lt;/div&gt;</p>
+
+<p class=MsoNormal>                                &lt;div&gt;</p>
+
+<p class=MsoNormal>                                    &lt;label
+for=&quot;forma-pago&quot; class=&quot;block text-sm font-medium
+text-gray-700&quot;&gt;Forma de Pago:&lt;/label&gt;</p>
+
+<p class=MsoNormal>                                    &lt;select
+id=&quot;forma-pago&quot; class=&quot;mt-1 block w-full rounded-md
+border-gray-300 shadow-sm focus:border-indigo-300 focus:ring
+focus:ring-indigo-200 focus:ring-opacity-50 p-2&quot; required&gt;</p>
+
+<p class=MsoNormal>                                        &lt;option
+value=&quot;&quot;&gt;Seleccione una opción&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                        &lt;option
+value=&quot;Efectivo&quot;&gt;Efectivo&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                        &lt;option
+value=&quot;Tarjeta de Crédito/Débito&quot;&gt;Tarjeta de
+Crédito/Débito&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                        &lt;option
+value=&quot;Transferencia Bancaria&quot;&gt;Transferencia
+Bancaria&lt;/option&gt;</p>
+
+<p class=MsoNormal>                                    &lt;/select&gt;</p>
+
+<p class=MsoNormal>                                &lt;/div&gt;</p>
+
+<p class=MsoNormal>                            &lt;/form&gt;</p>
+
+<p class=MsoNormal>                        &lt;/div&gt;</p>
+
+<p class=MsoNormal>                    &lt;/div&gt;</p>
+
+<p class=MsoNormal>                &lt;/div&gt;</p>
+
+<p class=MsoNormal>                &lt;div class=&quot;bg-gray-50 px-4 py-3
+sm:px-6 sm:flex sm:flex-row-reverse&quot;&gt;</p>
+
+<p class=MsoNormal>                    &lt;button
+id=&quot;confirmar-pedido&quot; type=&quot;button&quot; class=&quot;w-full
+inline-flex justify-center rounded-md border border-transparent shadow-sm px-4
+py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700
+focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
+sm:ml-3 sm:w-auto sm:text-sm&quot;&gt;</p>
+
+<p class=MsoNormal>                        Confirmar Pedido</p>
+
+<p class=MsoNormal>                    &lt;/button&gt;</p>
+
+<p class=MsoNormal>                    &lt;button
+id=&quot;cancelar-cliente-modal&quot; type=&quot;button&quot; class=&quot;mt-3
+w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm
+px-4 py-2 bg-gray-100 text-base font-medium text-gray-700 hover:bg-gray-200
+focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm&quot;&gt;</p>
+
+<p class=MsoNormal>                        Cancelar</p>
+
+<p class=MsoNormal>                    &lt;/button&gt;</p>
+
+<p class=MsoNormal>                &lt;/div&gt;</p>
+
+<p class=MsoNormal>            &lt;/div&gt;</p>
+
+<p class=MsoNormal>        &lt;/div&gt;</p>
+
+<p class=MsoNormal>    &lt;/div&gt;</p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal>    &lt;footer class=&quot;bg-gray-800 text-white py-4
+text-center mt-8 rounded-t-md shadow-md&quot;&gt;</p>
+
+<p class=MsoNormal>        &lt;p&gt;© 2024 RYM Comidas. Todos los derechos
+reservados.&lt;/p&gt;</p>
+
+<p class=MsoNormal>    &lt;/footer&gt;</p>
+
+<p class=MsoNormal>&lt;/body&gt;</p>
+
+<p class=MsoNormal>&lt;/html&gt;</p>
+
+</div>
+
+</body>
+
+</html>
