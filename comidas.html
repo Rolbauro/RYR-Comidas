@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RYM Comidas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" xintegrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+
+        /* Header con gradiente sutil */
+        .header-gradient {
+            background: linear-gradient(to right, #ef4444, #dc2626); /* red-500 to red-700 */
+        }
+
+        #carrito-items li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem; /* Slightly larger text in cart */
+        }
+
+        #carrito-items li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        #carrito-total {
+            font-weight: 700; /* font-bold */
+            font-size: 1.75rem; /* Larger total font */
+            margin-top: 1.5rem;
+            color: #1f2937; /* gray-900 */
+        }
+
+        .oculto {
+            display: none;
+        }
+
+        .visible {
+            display: block;
+        }
+
+        .eliminar-item {
+            color: #ef4444; /* red-500 */
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 0.375rem; /* rounded-md */
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .eliminar-item:hover {
+            background-color: #fecaca; /* bg-red-100 */
+        }
+
+        /* Estilos para la notificación de éxito */
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background-color: #10B981; /* Green-500 */
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .notification.show {
+            opacity: 1;
+        }
+
+        /* Estilos para los botones de cantidad */
+        .cantidad-btn {
+            background-color: #e5e7eb; /* gray-200 */
+            color: #4b5563; /* gray-700 */
+            border-radius: 9999px; /* full rounded */
+            width: 1.75rem; /* Slightly larger */
+            height: 1.75rem; /* Slightly larger */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700; /* font-bold */
+            cursor: pointer;
+            margin: 0 0.4rem; /* More spacing */
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .cantidad-btn:hover {
+            background-color: #d1d5db; /* gray-300 */
+        }
+
+        /* Estilos para las tarjetas de productos */
+        .product-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: 1px solid #e5e7eb; /* Subtle border */
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* shadow-lg */
+        }
+    </style>
+    <script type="module">
+        // Importar módulos de Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Variables globales de Firebase (proporcionadas por el entorno Canvas)
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+            // Inicializar Firebase
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const auth = getAuth(app);
+
+            let userId = null;
+            let isAuthReady = false;
+
+            // Elementos del DOM
+            const botonesAgregar = document.querySelectorAll('.agregar-carrito');
+            const carritoItemsLista = document.getElementById('carrito-items');
+            const carritoTotalElement = document.getElementById('carrito-total');
+            const botonFinalizarCompra = document.getElementById('finalizar-compra');
+            const carritoModal = document.getElementById('carrito-modal');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const botonCerrarModal = document.getElementById('cerrar-modal');
+            const verCarritoButton = document.getElementById('ver-carrito');
+            const carritoBadge = document.getElementById('carrito-badge');
+            const userIdDisplay = document.getElementById('user-id-display');
+            const notificationElement = document.getElementById('notification');
+
+            // Elementos del modal de cliente
+            const clienteModal = document.getElementById('cliente-modal');
+            const clienteModalOverlay = document.getElementById('cliente-modal-overlay');
+            const botonConfirmarPedido = document.getElementById('confirmar-pedido');
+            const botonCancelarClienteModal = document.getElementById('cancelar-cliente-modal');
+            const inputNombreCliente = document.getElementById('nombre-cliente');
+            const inputDireccionCliente = document.getElementById('direccion-cliente');
+            const selectFormaPago = document.getElementById('forma-pago');
+
+            // Elementos del nuevo modal de confirmación de pedido
+            const confirmacionModal = document.getElementById('confirmacion-modal');
+            const confirmacionModalOverlay = document.getElementById('confirmacion-modal-overlay');
+            const confirmacionDetalle = document.getElementById('confirmacion-detalle');
+            const botonCerrarConfirmacion = document.getElementById('cerrar-confirmacion');
+
+
+            let carrito = [];
+            let total = 0;
+
+            // Función para mostrar notificaciones
+            function showNotification(message) {
+                notificationElement.textContent = message;
+                notificationElement.classList.add('show');
+                setTimeout(() => {
+                    notificationElement.classList.remove('show');
+                }, 3000);
+            }
+
+            // Listener de cambios de autenticación
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    userIdDisplay.textContent = `ID de Usuario: ${userId}`;
+                    isAuthReady = true;
+                    console.log("Usuario autenticado:", userId);
+                    cargarCarritoDesdeLocalStorage();
+                } else {
+                    if (!initialAuthToken) {
+                        try {
+                            await signInAnonymously(auth);
+                            console.log("Sesión anónima iniciada.");
+                        } catch (error) {
+                            console.error("Error al iniciar sesión anónimamente:", error);
+                        }
+                    } else {
+                        try {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                            console.log("Sesión iniciada con token personalizado.");
+                        } catch (error) {
+                            console.error("Error al iniciar sesión con token personalizado:", error);
+                        }
+                    }
+                }
+            });
+
+            // Cargar carrito desde localStorage
+            function cargarCarritoDesdeLocalStorage() {
+                const carritoGuardado = localStorage.getItem('rymComidasCarrito');
+                if (carritoGuardado) {
+                    carrito = JSON.parse(carritoGuardado);
+                    total = carrito.reduce((sum, item) => sum + item.precioTotal, 0);
+                    actualizarCarrito();
+                }
+            }
+
+            // Guardar carrito en localStorage
+            function guardarCarritoEnLocalStorage() {
+                localStorage.setItem('rymComidasCarrito', JSON.stringify(carrito));
+            }
+
+            // Asignar event listeners a los botones "Agregar al carrito"
+            botonesAgregar.forEach(boton => {
+                boton.addEventListener('click', agregarAlCarrito);
+            });
+
+            // Asignar event listeners a los botones de los modales
+            botonFinalizarCompra.addEventListener('click', mostrarFormularioCliente);
+            botonCerrarModal.addEventListener('click', cerrarCarrito);
+            modalOverlay.addEventListener('click', cerrarCarrito);
+            verCarritoButton.addEventListener('click', mostrarCarrito);
+
+            // Event listeners para el modal de cliente
+            botonConfirmarPedido.addEventListener('click', confirmarPedido);
+            botonCancelarClienteModal.addEventListener('click', cerrarFormularioCliente);
+            clienteModalOverlay.addEventListener('click', cerrarFormularioCliente);
+
+            // Event listeners para el modal de confirmación de pedido
+            botonCerrarConfirmacion.addEventListener('click', cerrarConfirmacionModal);
+            confirmacionModalOverlay.addEventListener('click', cerrarConfirmacionModal);
+
+
+            function agregarAlCarrito(evento) {
+                const boton = evento.target;
+                const articulo = boton.closest('article'); // Usar closest para asegurar que seleccionamos el article
+                const nombre = articulo.querySelector('h2').textContent;
+                const precioTexto = articulo.querySelector('.text-red-600').textContent;
+                const precio = parseFloat(precioTexto.replace('$', ''));
+
+                const itemExistente = carrito.find(item => item.nombre === nombre);
+
+                if (itemExistente) {
+                    itemExistente.cantidad++;
+                    itemExistente.precioTotal = itemExistente.cantidad * precio;
+                } else {
+                    carrito.push({ nombre, precio, cantidad: 1, precioTotal: precio });
+                }
+
+                total += precio;
+                actualizarCarrito();
+                showNotification(`"${nombre}" añadido al carrito.`);
+            }
+
+            function actualizarCarrito() {
+                carritoItemsLista.innerHTML = '';
+                carrito.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <span>${item.nombre} 
+                            <button class="cantidad-btn disminuir-cantidad" data-nombre="${item.nombre}">-</button> 
+                            x${item.cantidad} 
+                            <button class="cantidad-btn aumentar-cantidad" data-nombre="${item.nombre}">+</button> 
+                            - $${item.precioTotal.toFixed(2)}
+                        </span>
+                        <span class="eliminar-item" data-nombre="${item.nombre}"><i class="fas fa-trash-alt"></i></span>
+                    `;
+                    carritoItemsLista.appendChild(listItem);
+                });
+                carritoTotalElement.textContent = `Total: $${total.toFixed(2)}`;
+
+                document.querySelectorAll('.eliminar-item').forEach(botonEliminar => {
+                    botonEliminar.addEventListener('click', eliminarItem);
+                });
+                document.querySelectorAll('.aumentar-cantidad').forEach(botonAumentar => {
+                    botonAumentar.addEventListener('click', aumentarCantidad);
+                });
+                document.querySelectorAll('.disminuir-cantidad').forEach(botonDisminuir => {
+                    botonDisminuir.addEventListener('click', disminuirCantidad);
+                });
+
+
+                let totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+                carritoBadge.textContent = totalItems;
+                carritoBadge.style.display = totalItems > 0 ? 'block' : 'none';
+
+                guardarCarritoEnLocalStorage();
+            }
+
+            function aumentarCantidad(evento) {
+                const nombreItem = evento.target.dataset.nombre;
+                const item = carrito.find(i => i.nombre === nombreItem);
+                if (item) {
+                    item.cantidad++;
+                    item.precioTotal = item.cantidad * item.precio;
+                    total += item.precio;
+                    actualizarCarrito();
+                }
+            }
+
+            function disminuirCantidad(evento) {
+                const nombreItem = evento.target.dataset.nombre;
+                const item = carrito.find(i => i.nombre === nombreItem);
+                if (item && item.cantidad > 1) {
+                    item.cantidad--;
+                    item.precioTotal = item.cantidad * item.precio;
+                    total -= item.precio;
+                    actualizarCarrito();
+                } else if (item && item.cantidad === 1) {
+                    eliminarItem({ target: { dataset: { nombre: nombreItem } } });
+                }
+            }
+
+            function eliminarItem(evento) {
+                const nombreItem = evento.target.dataset.nombre;
+                const itemIndex = carrito.findIndex(item => item.nombre === nombreItem);
+
+                if (itemIndex > -1) {
+                    const itemAEliminar = carrito[itemIndex];
+                    total -= itemAEliminar.precioTotal;
+                    carrito.splice(itemIndex, 1);
+                    actualizarCarrito();
+                    showNotification(`"${nombreItem}" eliminado del carrito.`);
+                }
+
+                if (carrito.length === 0) {
+                    cerrarCarrito();
+                }
+            }
+
+
+            function mostrarCarrito() {
+                if (carrito.length === 0) {
+                    showNotification('El carrito está vacío. Agregue productos antes de finalizar la compra.');
+                    return;
+                }
+                actualizarCarrito();
+                carritoModal.classList.remove('oculto');
+                carritoModal.classList.add('visible');
+                modalOverlay.classList.remove('oculto');
+                modalOverlay.classList.add('visible');
+
+            }
+
+            function cerrarCarrito() {
+                carritoModal.classList.add('oculto');
+                carritoModal.classList.remove('visible');
+                modalOverlay.classList.add('oculto');
+                modalOverlay.classList.remove('visible');
+            }
+
+            function mostrarFormularioCliente() {
+                if (carrito.length === 0) {
+                    showNotification('El carrito está vacío. Agregue productos antes de finalizar la compra.');
+                    return;
+                }
+                cerrarCarrito();
+                clienteModal.classList.remove('oculto');
+                clienteModal.classList.add('visible');
+                clienteModalOverlay.classList.remove('oculto');
+                clienteModalOverlay.classList.add('visible');
+            }
+
+            function cerrarFormularioCliente() {
+                clienteModal.classList.add('oculto');
+                clienteModal.classList.remove('visible');
+                clienteModalOverlay.classList.add('oculto');
+                clienteModalOverlay.classList.remove('visible');
+            }
+
+            function mostrarConfirmacionModal(nombreCliente, direccionCliente, formaPago) {
+                let detalleHtml = `
+                    <p class="text-lg font-semibold mb-4 text-gray-800">¡Gracias por tu pedido, ${nombreCliente}!</p>
+                    <p class="mb-2 text-gray-700">Tu pedido ha sido enviado y pronto será procesado.</p>
+                    <p class="mb-2 text-gray-700"><strong>Dirección de Entrega:</strong> ${direccionCliente}</p>
+                    <p class="mb-4 text-gray-700"><strong>Forma de Pago:</strong> ${formaPago}</p>
+                    <p class="font-extrabold text-2xl text-red-600 mb-4">Total: $${total.toFixed(2)}</p>
+                    <p class="text-sm text-gray-600">Recibirás una confirmación por WhatsApp en breve.</p>
+                `;
+
+                confirmacionDetalle.innerHTML = detalleHtml;
+                confirmacionModal.classList.remove('oculto');
+                confirmacionModal.classList.add('visible');
+                confirmacionModalOverlay.classList.remove('oculto');
+                confirmacionModalOverlay.classList.add('visible');
+            }
+
+            function cerrarConfirmacionModal() {
+                confirmacionModal.classList.add('oculto');
+                confirmacionModal.classList.remove('visible');
+                confirmacionModalOverlay.classList.add('oculto');
+                confirmacionModalOverlay.classList.remove('visible');
+            }
+
+            async function confirmarPedido() {
+                const nombreCliente = inputNombreCliente.value.trim();
+                const direccionCliente = inputDireccionCliente.value.trim();
+                const formaPago = selectFormaPago.value;
+
+                if (!nombreCliente || !direccionCliente || !formaPago) {
+                    showNotification('Por favor, complete todos los campos del formulario.');
+                    return;
+                }
+
+                if (!isAuthReady || !userId) {
+                    showNotification('Error: Autenticación no lista. Intente de nuevo.');
+                    console.error("Autenticación no lista o userId no disponible.");
+                    return;
+                }
+
+                let mensajeWhatsApp = `¡Nuevo Pedido de RYM Comidas!\n\n`;
+                mensajeWhatsApp += `Cliente: ${nombreCliente}\n`;
+                mensajeWhatsApp += `Dirección: ${direccionCliente}\n`;
+                mensajeWhatsApp += `Forma de Pago: ${formaPago}\n\n`;
+                mensajeWhatsApp += `Detalle del Pedido:\n`;
+                carrito.forEach(item => {
+                    mensajeWhatsApp += `${item.nombre} x${item.cantidad} - $${item.precioTotal.toFixed(2)}\n`;
+                });
+                mensajeWhatsApp += `Total: $${total.toFixed(2)}`;
+
+                // Guardar pedido en Firestore
+                try {
+                    const ordersCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/orders`);
+                    await addDoc(ordersCollectionRef, {
+                        cliente: nombreCliente,
+                        direccion: direccionCliente,
+                        formaPago: formaPago,
+                        items: carrito,
+                        total: total,
+                        timestamp: new Date(),
+                        userId: userId
+                    });
+                    console.log("Pedido guardado en Firestore.");
+                } catch (e) {
+                    console.error("Error al guardar el pedido en Firestore: ", e);
+                    showNotification("Error al guardar el pedido. Intente de nuevo.");
+                    return;
+                }
+
+                // Enviar por WhatsApp
+                const telefono = "5493704561974";
+                const url = `https://api.whatsapp.com/send/?phone=${telefono}&text=${encodeURIComponent(mensajeWhatsApp)}&type=phone_number&app_absent=0`;
+                window.open(url, '_blank');
+
+                mostrarConfirmacionModal(nombreCliente, direccionCliente, formaPago);
+
+                carrito = [];
+                total = 0;
+                localStorage.removeItem('rymComidasCarrito');
+                actualizarCarrito();
+                cerrarFormularioCliente();
+            }
+        });
+    </script>
+</head>
+<body class="bg-gray-100">
+    <div id="notification" class="notification"></div>
+
+    <header class="header-gradient text-white py-6 text-center rounded-b-lg shadow-xl">
+        <h1 class="text-4xl font-extrabold tracking-tight">
+            <i class="fas fa-utensils mr-3"></i> RYM Comidas <i class="fas fa-pizza-slice ml-3"></i>
+        </h1>
+        <p class="text-sm mt-1 opacity-90">¡Sabor que llega a tu puerta!</p>
+    </header>
+
+    <main class="container mx-auto mt-8 p-4 max-w-7xl">
+        <div class="text-right text-gray-600 text-sm mb-4" id="user-id-display">
+            </div>
+        <section class="bg-white rounded-xl shadow-lg p-6 mb-8 text-center border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Información de Contacto y Horarios</h2>
+            <div class="space-y-2 text-lg text-gray-700">
+                <p><i class="fas fa-phone-alt mr-2 text-blue-500"></i><strong>Teléfono:</strong> 3704091879</p>
+                <p><i class="fas fa-map-marker-alt mr-2 text-red-500"></i><strong>Dirección para Retiro:</strong> Junín 4155 B° la Alborada</p>
+                <p><i class="fas fa-clock mr-2 text-purple-500"></i><strong>Horarios de Atención:</strong> 19:00 hs. a 01:00 hs.</p>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Hamburguesa+Simple" alt="Hamburguesa Simple" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Hamburguesa Simple');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Hamburguesa Simple</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Lechuga, tomate, jamón y queso.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$3000</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Hamburguesa+Completa" alt="Hamburguesa Completa" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Hamburguesa Completa');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Hamburguesa Completa</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Lechuga, tomate, huevo, jamón y queso.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$4000</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Empanadas+Carne" alt="Empanadas de Carne" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Empanadas de Carne');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Empanadas de Carne</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Relleno de carne jugoso.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$6000</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Empanadas+JyQ" alt="Empanadas de Jamón y Queso" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Empanadas de Jamón y Queso');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Empanadas de Jamón y Queso</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Relleno de jamón y queso.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$6500</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Lomito+Simple" alt="Lomito Simple" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Lomito Simple');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Lomito Simple</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Lechuga, tomate, jamón y queso.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$7500</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Lomito+Completo" alt="Lomito Completo" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Lomito Completo');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Lomito Completo</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Lechuga, tomate, huevo, jamón y queso.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$8000</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Milanesa+Carne+Simple" alt="Sándwich de Milanesa de Carne Simple" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Sándwich de Milanesa de Carne Simple');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Sándwich de Milanesa de Carne Simple</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Lechuga, tomate, jamón y queso.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$4500</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Milanesa+Carne+Completa" alt="Sándwich de Milanesa de Carne Completo" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Sándwich de Milanesa de Carne Completo');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Sándwich de Milanesa de Carne Completo</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Lechuga, tomate, huevo, jamón y queso.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$5000</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Milanesa+Pollo+Simple" alt="Sándwich de Milanesa de Pollo Simple" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Sándwich de Milanesa de Pollo Simple');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Sándwich de Milanesa de Pollo Simple</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Lechuga, tomate, jamón y queso.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$4000</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Milanesa+Pollo+Completa" alt="Sándwich de Milanesa de Pollo Completo" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Sándwich de Milanesa de Pollo Completo');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Sándwich de Milanesa de Pollo Completo</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Lechuga, tomate, huevo, jamón y queso.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$4500</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Pizza+Muzzarella" alt="Pizza Muzzarella" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Pizza Muzzarella');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Pizza Muzzarella</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Salsa de tomate, muzzarella y orégano.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$6000</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Pizza+Pepperoni" alt="Pizza Pepperoni" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Pizza Pepperoni');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Pizza Pepperoni</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Salsa de tomate, salame de cerdo.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$8000</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Pizza+Especial" alt="Pizza Especial" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Pizza Especial');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Pizza Especial</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Salsa de tomate, muzzarella, tomate, jamón y huevo.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$7000</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Papas+Fritas" alt="Papas Fritas Porción" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Papas Fritas Porción');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Papas Fritas Porción</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Porción de papas fritas.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$3000</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Papas+Gratinadas" alt="Papas Fritas Gratinadas Porción" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Papas Fritas Gratinadas Porción');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Papas Fritas Gratinadas Porción</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Porción de papas fritas gratinadas.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$5000</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Coca+Cola" alt="Coca Cola" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Coca Cola');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Coca Cola</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Gaseosa Coca Cola 1.5Lts.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$3500</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/FFD700/000000?text=Fanta+Naranja" alt="Fanta Naranja" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Fanta Naranja');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Fanta Naranja</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Gaseosa Fanta Naranja 1.5Lts.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$3000</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+
+            <article class="bg-white rounded-xl shadow-md p-6 flex flex-col justify-between product-card">
+                <img src="https://placehold.co/400x250/ADD8E6/000000?text=Agua" alt="Agua" class="w-full h-auto rounded-lg mb-4 object-cover" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/000000?text=Imagen+No+Disponible'; console.error('Error al cargar la imagen: Agua');">
+                <h2 class="text-2xl font-bold mb-2 text-center text-gray-800">Agua</h2>
+                <p class="text-gray-700 text-base mb-3 text-center">Botella de 500ml.</p>
+                <p class="text-2xl font-extrabold text-center text-red-600 mb-5">$1200</p>
+                <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 self-center w-full transition duration-200 ease-in-out agregar-carrito">
+                    <i class="fas fa-cart-plus mr-2"></i> Agregar al carrito
+                </button>
+            </article>
+        </section>
+        <div class="text-center mt-8 flex justify-center space-x-4">
+            <button id="ver-carrito" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-200 ease-in-out">
+                <i class="fas fa-shopping-cart mr-2"></i> Ver Carrito <span id="carrito-badge" class="ml-2 px-3 py-1 rounded-full bg-red-500 text-white text-sm font-semibold" style="display: none;">0</span>
+            </button>
+            <button id="finalizar-compra" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition duration-200 ease-in-out">
+                <i class="fas fa-cash-register mr-2"></i> Finalizar Compra
+            </button>
+        </div>
+    </main>
+
+    <div id="carrito-modal" class="oculto fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div id="modal-overlay" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-2xl leading-6 font-bold text-gray-900 mb-4" id="modal-title">
+                                Tu Carrito de Compras
+                            </h3>
+                            <ul id="carrito-items" class="mt-2 text-gray-700">
+                                 </ul>
+                            <p id="carrito-total" class="text-gray-900"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button id="cerrar-modal" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-100 text-base font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cliente-modal" class="oculto fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title-cliente" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div id="cliente-modal-overlay" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-2xl leading-6 font-bold text-gray-900 mb-4" id="modal-title-cliente">
+                                Detalles del Cliente y Forma de Pago
+                            </h3>
+                            <form id="cliente-form" class="mt-4 space-y-4">
+                                <div>
+                                    <label for="nombre-cliente" class="block text-sm font-medium text-gray-700">Nombre:</label>
+                                    <input type="text" id="nombre-cliente" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" required>
+                                </div>
+                                <div>
+                                    <label for="direccion-cliente" class="block text-sm font-medium text-gray-700">Dirección de Entrega:</label>
+                                    <input type="text" id="direccion-cliente" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" required>
+                                </div>
+                                <div>
+                                    <label for="forma-pago" class="block text-sm font-medium text-gray-700">Forma de Pago:</label>
+                                    <select id="forma-pago" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2" required>
+                                        <option value="">Seleccione una opción</option>
+                                        <option value="Efectivo">Efectivo</option>
+                                        <option value="Tarjeta de Crédito/Débito">Tarjeta de Crédito/Débito</option>
+                                        <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button id="confirmar-pedido" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Confirmar Pedido
+                    </button>
+                    <button id="cancelar-cliente-modal" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-100 text-base font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmacion-modal" class="oculto fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title-confirmacion" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div id="confirmacion-modal-overlay" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-2xl leading-6 font-bold text-gray-900 mb-4" id="modal-title-confirmacion">
+                                ¡Pedido Confirmado!
+                            </h3>
+                            <div id="confirmacion-detalle" class="text-gray-700">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button id="cerrar-confirmacion" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-100 text-base font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white py-4 text-center mt-12 rounded-t-lg shadow-lg">
+        <p class="text-sm">&copy; 2024 RYM Comidas. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>
